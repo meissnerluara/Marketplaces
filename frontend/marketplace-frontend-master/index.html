@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <title>Coleta de Dados - Marketplaces</title>
+    <link rel="icon" href="icons/favicon.ico">
+    <style>
+    body {
+        margin: 0;
+        padding: 40px 20px 20px;
+        font-family: Arial, sans-serif;
+        background-color: #1a1a40;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        min-height: 80vh;
+        max-height: 85vh;
+    }
+
+    h1 {
+        margin-bottom: 25px;
+        margin-top: -15px;
+    }
+
+    h3 {
+        margin-bottom: 15px;
+        margin-top: 1px;
+    }
+
+    #platforms {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+        margin-bottom: 10px;
+    }
+
+    #platforms button {
+        background: none;
+        border: none;
+        cursor: pointer;
+    }
+
+    #platforms img {
+        width: 80px;
+        height: 80px;
+        transition: transform 0.2s;
+    }
+
+    #platforms img:hover {
+        transform: scale(1.1);
+    }
+
+    select, button {
+        padding: 10px;
+        margin: 10px;
+        font-size: 16px;
+        border-radius: 5px;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+
+    #btnColeta {
+        background-color: #28a745;
+        color: white;
+        border: none;
+        cursor: pointer;
+        margin-bottom: -7px;
+        margin-top: 15px;
+    }
+
+    #btnDownload {
+        background-color: #28a745;
+        color: white;
+        border: none;
+        cursor: pointer;
+        margin-bottom: 20px;
+        margin-top: -90px;
+        display: none;
+    }
+
+    #btnColeta:hover {
+        background-color: #218838;
+    }
+
+    #status {
+        margin-top: 30px;
+        font-size: 18px;
+        color: #ffffff;
+        white-space: pre-line;
+        height: 300px;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        overflow-y: auto;
+        padding: 10px;
+        border-radius: 5px;
+        min-width: 1200px;
+    }
+
+    #faviconLogo {
+        position: absolute;
+        bottom: 10px;
+        right: 20px;
+        width: 70px;
+        height: 70px;
+        cursor: pointer;
+    }
+    
+    #login {
+        margin-top: 100px;
+    }
+
+    #login input, #login button {
+        padding: 10px;
+        font-size: 16px;
+        border-radius: 5px;
+        margin: 5px;
+    }
+
+    #login button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+
+    #login button:hover {
+        background-color: #0056b3;
+    }
+
+    #erro {
+        color: red;
+        margin-top: 10px;
+    }
+    </style>
+</head>
+<body>
+
+    <!-- Tela de login por senha -->
+    <div id="login">
+        <h2>🔒 Acesso Restrito</h2>
+        <input type="password" id="senha" placeholder="Digite a senha..." />
+        <button onclick="verificarSenha()">Entrar</button>
+        <p id="erro"></p>
+    </div>
+
+    <!-- App principal (inicialmente oculto) -->
+    <div id="app" style="display: none;">
+        <h1>Coleta de Dados - Marketplaces</h1>
+
+        <h3>1. Selecione a Plataforma:</h3>
+        <div id="platforms"></div>
+
+        <h3>2. Selecione o Vendedor:</h3>
+        <select id="vendedores" disabled></select>
+
+        <br>
+        <button id="btnColeta" disabled>Iniciar Coleta de Dados</button>
+
+        <div id="status"></div>
+
+        <button id="btnDownload" disabled>Baixar Relatórios</button>
+
+        <img id="faviconLogo" src="icons/favicon.ico" alt="Favicon Logo" />
+    </div>
+
+<script>
+    async function verificarSenha() {
+      const senha = document.getElementById("senha").value.trim();
+      try {
+        const res = await fetch(`${APP_BASE_URL}/auth`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ password: senha }),
+        });
+        const text = await res.text();
+        if (res.ok) {
+          document.getElementById("login").style.display = "none";
+          document.getElementById("app").style.display = "block";
+        } else {
+          document.getElementById("erro").textContent = "Senha incorreta.";
+        }
+      } catch (err) {
+        console.error("[FRONT] Erro no fetch:", err);
+        document.getElementById("erro").textContent = "Erro de conexão.";
+      }
+    }
+
+// Lógica do app
+
+const APP_BASE_URL = "https://web-production-eecbf.up.railway.app";
+
+const platformsDiv = document.getElementById("platforms");
+const vendedoresSelect = document.getElementById("vendedores");
+const btnColeta = document.getElementById("btnColeta");
+const statusDiv = document.getElementById("status");
+    const btnDownload = document.getElementById("btnDownload");    
+    
+    btnDownload.onclick = () => {
+        btnDownload.disabled = true;
+        btnDownload.style.pointerEvents = "none";
+        btnDownload.style.opacity = "0.6";
+        window.location.href = `${APP_BASE_URL}/download?plataforma=${selectedPlatform}&vendedor=${selectedVendedor}`;
+    };
+
+let selectedPlatform = "";
+let selectedVendedor = "";
+
+async function loadPlatforms() {
+    const platforms = [
+        "amazon", "magalu", "mercadolivre", 
+    ];
+    
+    platformsDiv.innerHTML = "";
+    platforms.forEach(p => {
+        const btn = document.createElement("button");
+        const img = document.createElement("img");
+        img.src = `icons/${p.toLowerCase()}.png`;
+        img.alt = p;
+        btn.appendChild(img);
+        btn.onclick = () => selectPlatform(p);
+        platformsDiv.appendChild(btn);
+
+        img.onerror = function() {
+            console.error(`Erro ao carregar ícone: ${p}.png`);
+            this.src = 'icons/fallback.png';
+            this.style.opacity = '0.5';
+        };
+    });
+}
+
+async function selectPlatform(platform) {
+    
+    selectedPlatform = platform;
+    vendedoresSelect.disabled = true;
+    btnColeta.disabled = true;
+    vendedoresSelect.innerHTML = "";
+    const emptyOption = document.createElement("option");
+    emptyOption.value = "";
+    emptyOption.textContent = "Selecione...";
+    vendedoresSelect.appendChild(emptyOption);
+    statusDiv.textContent = "";
+    selectedVendedor = "";
+
+    try {
+        const res = await fetch(`${APP_BASE_URL}/vendedores/${platform}`);
+        
+        if (!res.ok) throw new Error(`Erro ${res.status} ao carregar vendedores`);
+        
+        const vendedores = await res.json();
+        
+        if (!Array.isArray(vendedores)) throw new Error("Resposta inválida do servidor");
+
+        if (vendedores.length === 0) {
+            statusDiv.textContent = "Nenhum vendedor encontrado para esta plataforma";
+            return;
+        }
+
+        vendedores.forEach(v => {
+            const option = document.createElement("option");
+            option.value = v;
+            option.textContent = v;
+            vendedoresSelect.appendChild(option);
+        });
+
+        vendedoresSelect.disabled = false;
+    } catch (error) {
+        console.error("Erro:", error);
+        statusDiv.textContent = `Erro ao carregar vendedores: ${error.message}`;
+    }
+}
+
+vendedoresSelect.onchange = () => {
+    selectedVendedor = vendedoresSelect.value;
+    btnColeta.disabled = !selectedVendedor;
+};
+
+btnColeta.onclick = async () => {
+    if (!selectedPlatform || !selectedVendedor) return;
+
+    btnColeta.disabled = true;
+    btnColeta.style.pointerEvents = "none";
+    btnColeta.style.opacity = "0.6";
+
+    btnDownload.disabled = true;
+    btnDownload.style.display = "none";
+
+    statusDiv.textContent =
+        `Coleta iniciada em ${new Date().toLocaleString('pt-BR')}\n\n\n` +
+        `ATENÇÃO:\n\n` +
+        `⌛ Aguarde! O tempo da coleta de dados depende da quantidade de SKUs cadastrados (≈ 0,2 segundos por SKU).\n` +
+        `Para grandes volumes (acima de 3.000 SKUs), o processo pode levar mais de 10 minutos.\n\n` +
+        `⚠️ Você pode navegar para outras abas ou janelas enquanto a coleta estiver em andamento, mas NÃO FECHE ESTA ABA DA APLICAÇÃO.\n\n` +
+        `Ao término do processamento, um botão será exibido para baixar os relatórios.\n` +
+        `⚠️ Por favor, clique apenas uma vez! Como os arquivos podem ser pesados, o download pode levar alguns segundos para iniciar.\n`;
+
+    // Chama a coleta no backend
+    try {
+        await fetch(`${APP_BASE_URL}/coletar`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                plataforma: selectedPlatform,
+                vendedor: selectedVendedor
+            })
+        });
+    } catch (err) {
+        statusDiv.textContent += "\nErro ao iniciar coleta!";
+        btnColeta.disabled = false;
+        btnColeta.style.pointerEvents = "";
+        btnColeta.style.opacity = "";
+        return;
+    }
+
+    // Agora inicia o streaming dos logs
+    const source = new EventSource(`${APP_BASE_URL}/stream_logs?plataforma=${selectedPlatform}&vendedor=${selectedVendedor}`);
+
+    source.onmessage = event => {
+        const message = event.data;
+        if (message.trim() === "") return;
+
+        const filteredOut = [
+            "Coleta de dados", "Conexão com o banco", "Token validado!", "exemplo:", "salvo em:", "Total de pedidos",
+            "Dados salvos", "Coleta finalizada", "Coleta Magalu", "Coleta Mercado Livre",
+            "Iniciando coleta", "Coletando SKUs", "Total de SKUs coletados", "Salvando dados no banco de dados",
+            "Gerando relatório de erros de qualidade"
+        ];
+
+        const isFinalizada = message.includes("finalizada");
+        const shouldFilter = filteredOut.some(text => message.includes(text));
+
+        if (!shouldFilter && !isFinalizada) {
+            statusDiv.textContent += message + "\n";
+            statusDiv.scrollTop = statusDiv.scrollHeight;
+        }
+
+        if (isFinalizada) {
+            btnDownload.disabled = false;
+            btnDownload.style.display = "inline-block";
+            btnDownload.style.pointerEvents = "";
+            btnDownload.style.opacity = "";
+        }
+    };
+
+    source.onerror = () => {
+        source.close();
+        btnColeta.disabled = false;
+        btnColeta.style.pointerEvents = "";
+        btnColeta.style.opacity = "";
+    };
+};
+
+btnDownload.onclick = () => {
+    window.location.href = `${APP_BASE_URL}/download?plataforma=${selectedPlatform}&vendedor=${selectedVendedor}`;
+};
+
+loadPlatforms();
+</script>
+</body>
+</html>

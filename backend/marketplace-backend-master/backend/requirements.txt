@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+python-dotenv
+requests
+pandas
+openpyxl
+supabase
+psycopg2-binary
+xlsxwriter
+pytz

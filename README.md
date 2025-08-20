@@ -1,7 +1,6 @@
 # Marketplaces Data Collector
 
-Repositório contendo **backend e frontend** para coleta, tratamento e exportação de dados dos marketplaces **Amazon, Mercado Livre e Magalu**.  
-O backend é responsável pelo processamento e exportação dos dados, enquanto o frontend oferece uma interface estática para iniciar a coleta e baixar relatórios.
+Repositório contendo **backend e frontend** para coleta, tratamento e exportação de dados dos marketplaces **Amazon, Mercado Livre e Magalu**. O backend é responsável pelo processamento e exportação dos dados, enquanto o frontend oferece uma interface estática para iniciar a coleta e baixar relatórios.
 
 ---
 

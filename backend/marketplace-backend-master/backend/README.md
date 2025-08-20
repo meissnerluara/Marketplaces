@@ -1,20 +1,16 @@
-# marketplace-backend
 
-Backend FastAPI para coleta, tratamento e exportação de dados dos marketplaces Amazon, Magalu e Mercado Livre.
+Backend FastAPI para coleta, tratamento e exportação de dados dos marketplaces Amazon, Mercado Livre e Magalu.
 
 ## Funcionalidades
-- Autenticação por senha
 - Coleta de dados dos marketplaces
 - Processamento e validação de dados
 - Exportação de relatórios em ZIP
 
 ## Estrutura
-- `app/services/`: Serviços de integração e tratamento de dados
-- `app/routes.py`: Rotas da API
 - `app/main.py`: Inicialização do FastAPI
+- `app/routes.py`: Rotas da API
+- `app/services/`: Serviços de integração e tratamento de dados
 
-## Segurança
-- Não expõe variáveis sensíveis
-- CORS restrito ao domínio do frontend
+---
 
-Para dúvidas ou sugestões, entre em contato com o time de desenvolvimento da E-Consultoria de Vendas.
+> *Este repositório tem finalidade exclusivamente demonstrativa, não sendo utilizado em ambiente de produção nem para deploy da aplicação.*

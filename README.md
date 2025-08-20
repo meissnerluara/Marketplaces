@@ -35,5 +35,6 @@ Repositório contendo **backend e frontend** para coleta, tratamento e exportaç
 
 ---
 
-## Observação
-- Este repositório tem finalidade **exclusivamente demonstrativa**, não sendo utilizado em ambiente de produção nem para deploy da aplicação.  
+## Observações
+- Este repositório tem finalidade **exclusivamente demonstrativa**, não sendo utilizado para deploy da aplicação.  
+- O código atual não inclui todas as medidas de segurança necessárias para um ambiente de produção.  

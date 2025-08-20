@@ -9,7 +9,7 @@ app.include_router(router)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["URL"],
+    allow_origins=["FRONTEND_URL"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"]

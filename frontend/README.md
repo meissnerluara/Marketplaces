@@ -1,6 +1,5 @@
-# marketplace-frontend
 
-Frontend estático para coleta e download de dados dos marketplaces Amazon, Magalu e Mercado Livre.
+Frontend estático para coleta e download de dados dos marketplaces Amazon, Mercado Livre e Magalu.
 
 ## Funcionalidades
 - Login por senha
@@ -16,4 +15,6 @@ Frontend estático para coleta e download de dados dos marketplaces Amazon, Maga
 ## Observações
 - O backend deve estar rodando e acessível para o funcionamento completo do frontend
 
-Para dúvidas ou sugestões, entre em contato com o time de desenvolvimento da E-Consultoria de Vendas.
+---
+
+> *Este repositório tem finalidade exclusivamente demonstrativa, não sendo utilizado em ambiente de produção nem para deploy da aplicação.*

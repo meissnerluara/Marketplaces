@@ -37,31 +37,26 @@ class ColetaRequest(BaseModel):
     vendedor: str
 
 def verify_password(plain_password, hashed_password):
-    """Verifica senha com proteção contra timing attacks"""
     return pwd_context.verify(plain_password, hashed_password)
 
 def get_password_hash(password):
     return pwd_context.hash(password)
 
 def authenticate_user(password: str):
-    """Autentica usuário com senha segura"""
     hashed_password = os.getenv("APP_PASSWORD_HASH")
     if not hashed_password:
-        # Gera hash da senha na primeira execução
         hashed_password = get_password_hash(os.getenv("APP_PASSWORD"))
         os.environ["APP_PASSWORD_HASH"] = hashed_password
     
     return verify_password(password, hashed_password)
 
 def create_access_token(data: dict, expires_delta: timedelta = None):
-    """Cria token JWT seguro"""
     to_encode = data.copy()
     expire = datetime.utcnow() + (expires_delta or timedelta(minutes=15))
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 async def get_current_user(token: str = Depends(oauth2_scheme)):
-    """Valida token JWT e retorna usuário"""
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Credenciais inválidas",
@@ -75,7 +70,6 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
 
 @router.post("/token", response_model=Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
-    """Endpoint de autenticação JWT"""
     if not authenticate_user(form_data.password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -94,7 +88,6 @@ async def coletar(
     request: ColetaRequest, 
     current_user: dict = Depends(get_current_user)
 ):
-    """Endpoint protegido para iniciar coleta de dados"""
     try:
         if request.plataforma == "magalu":
             msg = magalu.coletar_dados_magalu(request.vendedor)
@@ -113,7 +106,6 @@ def listar_vendedores(
     plataforma: str, 
     current_user: dict = Depends(get_current_user)
 ):
-    """Endpoint protegido para listar vendedores"""
     try:
         tokens = load_tokens_from_env(plataforma)
         return list(tokens.keys())
@@ -126,7 +118,6 @@ def baixar_zip(
     vendedor: str, 
     current_user: dict = Depends(get_current_user)
 ):
-    """Endpoint protegido para download de relatórios"""
     try:
         if plataforma == "magalu":
             zip_stream = magalu.gerar_zip_relatorios_do_dia(vendedor)
@@ -154,7 +145,6 @@ async def stream_logs(
     vendedor: str, 
     current_user: dict = Depends(get_current_user)
 ):
-    """Endpoint protegido para streaming de logs"""
     def fake_event():
         yield f"data: Coleta finalizada para {vendedor} na plataforma {plataforma}\n\n"
     return StreamingResponse(fake_event(), media_type="text/event-stream")

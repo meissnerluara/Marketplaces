@@ -11,7 +11,7 @@ Repositório contendo **backend e frontend** para coleta, tratamento e exportaç
 - Processamento e validação de dados  
 - Exportação de relatórios em ZIP  
 
-### Frontend.
+### Frontend
 - Login por senha  
 - Seleção de plataforma e vendedor  
 - Início da coleta e acompanhamento dos logs  
